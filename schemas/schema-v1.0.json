@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:windows-dns-config-auditor:schema:1.0",
+  "title": "windows-dns-config-auditor 1.0 audit result",
+  "type": "object",
+  "required": ["schema_version", "application_version", "system", "adapters", "suffix_configuration", "findings", "warnings", "limitations"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "application_version": {"type": "string"},
+    "system": {
+      "type": "object", "required": ["hostname", "primary_dns_suffix", "source"],
+      "properties": {"hostname": {"type": "string"}, "primary_dns_suffix": {"type": "string"}, "source": {"type": "string"}}
+    },
+    "suffix_configuration": {
+      "type": "object", "required": ["search_lists"],
+      "properties": {"search_lists": {"type": "array", "items": {
+        "type": "object", "required": ["source", "status", "raw_value"],
+        "properties": {"source": {"type": "string"}, "status": {"type": "string"}, "raw_value": {"type": "string"}}
+      }}}
+    },
+    "adapters": {"type": "array", "items": {"$ref": "#/$defs/adapter"}},
+    "findings": {"type": "array", "items": {
+      "type": "object", "required": ["code", "adapter_id", "message"],
+      "properties": {"code": {"type": "string"}, "adapter_id": {"type": "string"}, "message": {"type": "string"}}
+    }},
+    "warnings": {"$ref": "#/$defs/strings"},
+    "limitations": {"$ref": "#/$defs/strings"}
+  },
+  "$defs": {
+    "strings": {"type": "array", "items": {"type": "string"}},
+    "server": {
+      "type": "object",
+      "required": ["address", "family", "scope_id", "valid", "loopback", "link_local", "unspecified", "multicast_or_reserved"],
+      "properties": {
+        "address": {"type": "string", "description": "Numeric address with optional decimal IPv6 scope; empty if unsupported or malformed."},
+        "family": {"enum": ["IPv4", "IPv6", "unknown"]},
+        "scope_id": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+        "valid": {"type": "boolean"}, "loopback": {"type": "boolean"}, "link_local": {"type": "boolean"},
+        "unspecified": {"type": "boolean"}, "multicast_or_reserved": {"type": "boolean"}
+      }
+    },
+    "adapter": {
+      "type": "object",
+      "required": ["id", "friendly_name", "description", "interface_index", "ipv6_interface_index", "luid", "interface_type", "operational_status", "active", "ipv4_enabled", "ipv6_enabled", "connection_suffix", "registration_enabled", "suffix_registration_enabled", "source", "dns_servers"],
+      "properties": {
+        "id": {"type": "string"}, "friendly_name": {"type": "string"}, "description": {"type": "string"},
+        "interface_index": {"type": "integer", "minimum": 0}, "ipv6_interface_index": {"type": "integer", "minimum": 0},
+        "luid": {"type": "string", "pattern": "^[0-9]+$"}, "interface_type": {"type": "integer", "minimum": 0},
+        "operational_status": {"type": "string"}, "active": {"type": "boolean"},
+        "ipv4_enabled": {"type": "boolean"}, "ipv6_enabled": {"type": "boolean"},
+        "connection_suffix": {"type": "string"}, "registration_enabled": {"type": "boolean"},
+        "suffix_registration_enabled": {"type": "boolean"}, "source": {"type": "string"},
+        "dns_servers": {"type": "array", "items": {"$ref": "#/$defs/server"}}
+      }
+    }
+  }
+}
